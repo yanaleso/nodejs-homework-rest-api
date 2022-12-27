@@ -6,6 +6,10 @@ const {handleSaveErrors} = require("../helpers")
 const subscriptionOptions = ["starter", "pro", "business"]
 
 const userSchema = new Schema({
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+  },
   password: {
     type: String,
     required: [true, 'Set password for user'],
@@ -35,6 +39,11 @@ const userSchema = new Schema({
 userSchema.post("save", handleSaveErrors)
 
 const registerSchema = Joi.object({
+  name: Joi.string().required(),
+  password: Joi.string().required(),
+  email: Joi.string().required(),
+})
+const loginSchema = Joi.object({
   password: Joi.string().required(),
   email: Joi.string().required(),
 })
@@ -47,6 +56,7 @@ const verifyEmailSchema = Joi.object({
   
 const schemas = {
   registerSchema,
+  loginSchema,
   updateSubscriptionSchema,
   verifyEmailSchema
 }
