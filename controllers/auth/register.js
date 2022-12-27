@@ -1,11 +1,12 @@
 const bcrypt = require("bcryptjs")
 const gravatar = require("gravatar")
 const { nanoid } = require("nanoid")
+const jwt = require("jsonwebtoken")
 
 const { User } = require("../../models/user")
 const { RequestError, sendEmail } = require("../../helpers")
 
-const {BASE_URL} = process.env
+const {BASE_URL, SECRET_KEY} = process.env
 
 const register = async (req, res) => {
     const {name, email, password, subscription} = req.body
@@ -17,6 +18,12 @@ const register = async (req, res) => {
     const avatarURL = gravatar.url(email)
     const verificationToken = nanoid()
     const result = await User.create({ name, email, password: hashPassword, subscription, avatarURL, verificationToken })
+
+    const payload = {
+        id: result._id,
+    }
+    const token = jwt.sign(payload, SECRET_KEY, {expiresIn: "24h"})
+    await User.findByIdAndUpdate(result._id, { token })
 
     const mail = {
         to: email,
@@ -30,7 +37,8 @@ const register = async (req, res) => {
             name: result.name,
             email: result.email,
             subscription: result.subscription,
-        }
+        },
+        token
     })
 }
 
