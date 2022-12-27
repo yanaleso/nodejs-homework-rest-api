@@ -24,7 +24,7 @@ contactSchema.post("save", handleSaveErrors)
 
 const addSchema = Joi.object({
   name: Joi.string().required(),
-  email: Joi.string().required(),
+  email: Joi.string(),
   phone: Joi.string().required(),
   favorite: Joi.boolean(),
 })
